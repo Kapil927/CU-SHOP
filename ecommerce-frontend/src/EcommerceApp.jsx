@@ -4,6 +4,8 @@ import { Search, ShoppingCart, Package, Star, LogIn, LogOut, X, Plus, Minus, Fil
 
 export default function EcommerceApp() {
   // const API_BASE = "http://localhost:8080/api";
+  axios.defaults.withCredentials = true;
+
   const API_BASE = "https://ecommerce-backend-kjni.onrender.com/api";
 
   axios.defaults.withCredentials = true;
