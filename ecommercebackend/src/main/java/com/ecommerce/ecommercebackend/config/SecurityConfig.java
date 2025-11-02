@@ -24,7 +24,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ Load user details from your MySQL database
+    // ✅ Load user details from DB
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
@@ -36,15 +36,33 @@ public class SecurityConfig {
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
     }
 
+    // ✅ Global CORS Configuration (Allow Frontend + Localhost)
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins(
+                                "https://ecommerce-frontend-dmgg.onrender.com",
+                                "http://localhost:5173"
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
+    }
+
+    // ✅ Security Rules
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
 
-            // ✅ Authorization Rules
             .authorizeHttpRequests(auth -> auth
-                // 🌍 Public (no login required)
+                // 🌍 Public routes (no login needed)
                 .requestMatchers(
                     "/api/products/**",
                     "/api/reviews/**",
@@ -60,23 +78,25 @@ public class SecurityConfig {
                 // 🔐 Admin routes
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                // 🔒 All other routes require login
+                // 🔒 User routes (must login)
                 .anyRequest().authenticated()
             )
 
-            // ✅ Login and Logout handling
+            // ✅ Login setup (Form-based)
             .formLogin(form -> form
                 .loginProcessingUrl("/api/auth/login")
                 .successHandler((req, res, auth) -> res.setStatus(200))
                 .failureHandler((req, res, ex) -> res.setStatus(401))
                 .permitAll()
             )
+
+            // ✅ Logout setup
             .logout(logout -> logout
                 .logoutUrl("/api/auth/logout")
                 .logoutSuccessHandler((req, res, auth) -> res.setStatus(200))
             )
 
-            // ✅ Session Control
+            // ✅ Session Management
             .sessionManagement(session -> session
                 .maximumSessions(1)
                 .maxSessionsPreventsLogin(false)
@@ -84,10 +104,7 @@ public class SecurityConfig {
                 .sessionFixation().migrateSession()
             );
 
-        // ✅ Allow Swagger & H2 Console frames
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
-
         return http.build();
     }
-
 }
