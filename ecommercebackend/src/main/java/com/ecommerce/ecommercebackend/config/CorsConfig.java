@@ -24,7 +24,8 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:5173",
-                                "https://ecommerce-frontend-dmgg.onrender.com"
+                                "https://ecommerce-frontend-dmgg.onrender.com",
+                                "https://cu-shop.bytexl.live"
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")
