@@ -23,4 +23,8 @@ services:
 
 networks:
   ecommerce-network:
+<<<<<<< HEAD
     driver: bridge
+=======
+    driver: bridge
+>>>>>>> 990174023d1bdcb014ef88d1e3165d6fbc4bc0a6
