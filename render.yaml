@@ -4,6 +4,7 @@ services:
     env: docker
     rootDir: ecommercebackend
     plan: free
+    autoDeploy: true
     envVars:
       - key: SPRING_DATASOURCE_URL
         valueFromDatabase:
@@ -12,12 +13,11 @@ services:
       - key: SPRING_DATASOURCE_USERNAME
         valueFromDatabase:
           name: ecommerce-db
-          property: username
+          property: user
       - key: SPRING_DATASOURCE_PASSWORD
         valueFromDatabase:
           name: ecommerce-db
           property: password
-    autoDeploy: true
 
   - type: web
     name: ecommerce-frontend
@@ -28,5 +28,6 @@ services:
 
 databases:
   - name: ecommerce-db
-    engine: mysql
+    type: database
+    databaseName: ecommerce
     plan: free
